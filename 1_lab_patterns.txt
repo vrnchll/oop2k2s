@@ -1,0 +1,367 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace patterns_1
+{
+    //
+    public abstract class Weapons
+    {
+        public abstract void Fight();
+    }
+    public abstract class Movement {
+
+        public abstract void Run();
+    }
+    //
+    public class Bow : Weapons
+    {
+        public override void Fight()
+        {
+            Console.WriteLine("Стрелять из лука !!!");
+        }
+    }
+    public class Teeth : Weapons
+    {
+        public override void Fight()
+        {
+            Console.WriteLine("Кусаться!!!");
+        }
+    }
+
+   public class CatchingUp : Movement
+    {
+        public override void Run()
+        {
+           Console.WriteLine("Догонять!");
+        }
+    }
+
+    public class RunAway : Movement
+    {
+        public override void Run()
+        {
+            Console.WriteLine("Убегать!");
+
+        }
+    }
+
+    //класс абстрактной фабрики
+    public abstract class GameFactory
+    {
+        public abstract Weapons CreateWeapons();
+        public abstract Movement CreateMovement();
+    }
+
+    //
+    public class RedRidingHoodFactory :GameFactory
+    {
+        public override Movement CreateMovement()
+        {
+            return new RunAway();
+        }
+        public override Weapons CreateWeapons()
+        {
+            return new Bow();
+        }
+    }
+
+    public class GreyWolfFactory :GameFactory
+    {
+        public override Movement CreateMovement()
+        {
+            return new CatchingUp();
+        }
+        public override Weapons CreateWeapons()
+        {
+            return new Teeth();
+        }
+    }
+   
+    //
+   public class Player
+    {
+        private Weapons weapons;
+        private Movement movement;
+
+        public Player(GameFactory factory)
+        {
+            weapons = factory.CreateWeapons();
+            movement = factory.CreateMovement();
+        }
+
+        public void Run()
+        {
+            movement.Run();
+        }
+        public void Fight()
+        {
+            weapons.Fight();
+        }
+    }
+    //singleton
+    public sealed class GrannySingleton
+    {
+        private static GrannySingleton instance;
+        private static readonly object Locker = new object();
+
+       private GrannySingleton()
+        {
+            
+        }
+        public static GrannySingleton GetInstance()
+        {
+            if(instance == null){
+                lock(Locker)
+                {
+                    if(instance == null)
+                    {
+                        instance = new GrannySingleton();
+                    }
+                }
+            }
+            return instance;
+        }
+    }
+
+    //Builder
+
+    //лицо
+    class Face
+    {
+        // форма
+        public string Form { get; set; }
+    }
+    // глаза
+    class Eyes
+    {
+        // цвет
+        public string Color { get; set; }
+    }
+    // волосы
+    class Hair
+    {
+        public string Color { get; set; }
+        public string  Length { get; set; }
+    }
+    // рот
+    class Mouth
+    {
+        //толщина
+        public string Width{ get; set; }
+    }
+
+    class MakeAnAppearance
+    {
+        public Face Face { get; set; }
+        public Eyes Eyes { get; set; }
+        public Hair Hair { get; set; }
+        public Mouth Mouth { get; set; }
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (Face != null)
+                sb.Append(Face.Form + "\n");
+            if (Eyes != null)
+                sb.Append(Eyes.Color + "\n");
+            if (Hair != null)
+                sb.Append(Hair.Color + Hair.Length + " \n");
+            if (Mouth != null)
+                sb.Append(Mouth.Width + "\n");
+            return sb.ToString();
+        }
+    }
+    //строитель
+    abstract class ApperianceBuilder
+    {
+        public MakeAnAppearance MakeAnAppearance { get; private set; }
+        public void CreateAppearance()
+        {
+            MakeAnAppearance = new MakeAnAppearance();
+        }
+        public abstract void SetFace();
+        public abstract void SetEyes();
+        public abstract void SetHair();
+        public abstract void SetMouth();
+    }
+    //создатель(директор)
+    class Creator
+    {
+        public MakeAnAppearance MakeAnAppearance(ApperianceBuilder apperianceBuilder)
+        {
+            apperianceBuilder.CreateAppearance();
+            apperianceBuilder.SetEyes();
+            apperianceBuilder.SetFace();
+            apperianceBuilder.SetHair();
+            apperianceBuilder.SetMouth();
+            return apperianceBuilder.MakeAnAppearance;
+        }
+    }
+
+
+    // строитель для девочки
+    class GirlBuilder :ApperianceBuilder
+    {
+        public override void SetFace()
+        {
+            this.MakeAnAppearance.Face = new Face { Form = "Овальная" };
+        }
+
+        public override void SetEyes()
+        {
+            this.MakeAnAppearance.Eyes = new Eyes { Color = "Зеленый" };
+        }
+        public override void SetHair()
+        {
+            this.MakeAnAppearance.Hair = new Hair { Color = "Коричневый" };
+        }
+
+        public override void SetMouth()
+        {
+            this.MakeAnAppearance.Mouth = new Mouth { Width = "Тонкие" };
+        }
+    }
+    // строитель для мальчика
+    class BoyBuilder : ApperianceBuilder
+    {
+        public override void SetFace()
+        {
+            this.MakeAnAppearance.Face = new Face { Form = "Квадратная" };
+        }
+
+        public override void SetEyes()
+        {
+            this.MakeAnAppearance.Eyes = new Eyes { Color = "Карие" };
+        }
+        public override void SetHair()
+        {
+            this.MakeAnAppearance.Hair = new Hair { Color = "Черный" };
+        }
+
+        public override void SetMouth()
+        {
+            this.MakeAnAppearance.Mouth = new Mouth { Width = "Пухлые" };
+        }
+    }
+
+    //prototype
+    interface IHuman
+    {
+        IHuman Clone();
+        void GetInfo();
+    }
+    class Man:IHuman
+    {
+
+        int heigth;
+        string name;
+        public Man(int h, string n)
+        {
+            heigth = h;
+            name = n;
+        }
+        public IHuman Clone()
+        {
+            return new Man(this.heigth, this.name);
+        }
+        public void GetInfo()
+        {
+            Console.WriteLine("Мужчина с ростом {0} и зовут которого {1}", heigth, name);
+        }
+    }
+    class Woman : IHuman
+    {
+
+        int heigth;
+        string name;
+        public Woman(int h, string n)
+        {
+            heigth = h;
+            name = n;
+        }
+        public IHuman Clone()
+        {
+            return new Woman(this.heigth, this.name);
+        }
+        public void GetInfo()
+        {
+            Console.WriteLine("Женщина с ростом {0} и зовут которую {1}", heigth, name);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //1
+            Console.WriteLine("Выберите количество героев(от 1 до 4):");
+            string choice1 = Console.ReadLine();
+            switch (choice1)
+            {
+                case "1":
+                    Console.WriteLine("Вы выбрали одного героя!");
+                    break;
+                case "2":
+                    Console.WriteLine("Вы выбрали два героя!");
+                    break;
+                case "3":
+                    Console.WriteLine("Вы выбрали три героя!");
+                    break;
+                case "4":
+                    Console.WriteLine("Вы выбрали четыре героя!");
+                    break;
+                default:
+                    Console.WriteLine("Неверное значение, попробуйте еще раз");
+                    break;
+            }
+            //2
+            Console.WriteLine("Выберите героя: Красная шапочка или Серый волк");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "Красная шапочка":
+                    Player redHood = new Player(new RedRidingHoodFactory());
+                    redHood.Fight();
+                    redHood.Run();
+                    break;
+                case "Серый волк":
+                    Player grayWolf = new Player(new GreyWolfFactory());
+                    grayWolf.Fight();
+                    grayWolf.Run();
+                    break;
+                default:
+                    Console.WriteLine("Такого героя нет");
+                    break;
+            }
+
+            
+            GrannySingleton granny = GrannySingleton.GetInstance();
+            Console.WriteLine("");
+
+            //3 задание
+            //объект директора(создателя)
+            Creator director = new Creator();
+            ApperianceBuilder builder = new GirlBuilder();
+            // создаем внешность
+            MakeAnAppearance veronika = director.MakeAnAppearance(builder);
+            Console.WriteLine(veronika.ToString());
+
+            Console.WriteLine("");
+
+            //4 задание
+            IHuman human = new Woman(170, "Veronika");
+            IHuman clonedHuman = human.Clone();
+            human.GetInfo();
+            clonedHuman.GetInfo();
+
+            human = new Man(180, "Vadim");
+            clonedHuman = human.Clone();
+            human.GetInfo();
+            clonedHuman.GetInfo();
+
+            Console.ReadKey();
+        }
+    }
+}
