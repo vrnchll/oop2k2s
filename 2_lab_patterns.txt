@@ -1,0 +1,61 @@
+﻿using System;
+
+namespace patterns_2
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Adapter
+            //красная шапочка
+            RedHood redhood = new RedHood();
+           
+            RunAway move = new RunAway();
+            
+            redhood.Travel(move);
+            
+            MoveRedRid moveredrid = new MoveRedRid();
+            // используем адаптер
+            Movement movered = new MovingToMoveAdapter(moveredrid);
+            redhood.Travel(movered);
+
+            Console.WriteLine("");
+
+            //decorator
+            Knight knight1 = new GoodKnight();//добрый рыцарь
+            knight1 = new KnightOnHourse(knight1);//рыцарь в доспехах
+            Console.WriteLine(knight1.Name + " " + knight1.Power());
+
+            Console.WriteLine("");
+
+            Knight knight2 = new BadKnight();//злой рыцарь
+            knight2 = new KnightWithSword(knight2);//рыцарь с мечом
+            Console.WriteLine(knight2.Name + " " + knight2.Power());
+
+            Console.WriteLine("");
+
+            Knight knight3 = new GoodKnight();
+            knight3 = new KnightWithArmor(knight3);
+            knight3 = new KnightWithSword(knight3);
+            Console.WriteLine(knight3.Name + " " + knight3.Power());
+
+            Console.WriteLine("");
+
+            //composite
+            IComponent knight = new Map { Title = "Knight"};
+            knight.AddComponent(new MapComponent { Title = "Knight With Armor" });
+            knight.AddComponent(new MapComponent { Title = "Knight On Hourse" });
+
+            IComponent war = new Map { Title="War"};
+            war.AddComponent(knight);
+            war.Draw();
+
+            Console.WriteLine("");
+
+            var fight = war.Find("Knight With Armor");
+            fight.Draw();
+
+            Console.Read();
+        }
+    }
+}
