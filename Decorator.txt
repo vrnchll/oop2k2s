@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace patterns_2
+{
+    abstract class Knight
+    {
+        public string Name { get; protected set; }
+        public Knight(string name)
+        {
+            this.Name = name;
+        }
+        public abstract int Power();
+    }
+    class GoodKnight : Knight
+    {
+        public GoodKnight():base("Добрый рыцарь")
+        {
+
+        }
+        public override int Power()
+        {
+            return 100;
+        }
+    }
+    class BadKnight:Knight
+    {
+        public BadKnight():base("Злой рыцарь")
+        {
+
+        }
+        public override int Power()
+        {
+            return 50 ;
+        }
+
+    }
+    abstract class KnightDecorator:Knight
+    {
+        protected Knight knight;
+        public KnightDecorator(string n, Knight knight):base(n)
+        {
+            this.knight = knight;
+        }
+    }
+    class KnightWithArmor:KnightDecorator
+    {
+        public KnightWithArmor(Knight k):base(k.Name + " " +"c доспехами",k)
+        {
+
+        }
+        public override int Power()
+        {
+                return knight.Power() + 50;
+        }
+    }
+    class KnightOnHourse : KnightDecorator
+    {
+        public KnightOnHourse(Knight s) : base(s.Name + " " + "на лошади", s)
+        {
+
+        }
+        public override int Power()
+        {
+            return knight.Power() + 30;
+        }
+    }
+    class KnightWithSword : KnightDecorator
+    {
+        public KnightWithSword(Knight w) : base(w.Name + " " + "с мечом", w)
+        {
+
+        }
+        public override int Power()
+        {
+            return knight.Power() + 100;
+        }
+    }
+}
