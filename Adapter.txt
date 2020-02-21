@@ -18,13 +18,7 @@ namespace patterns_2
         }
     public class MoveRedRid : MovingToMoveAdapter, Moving
     {
-        internal Moving moving
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        
 
         public void MoveToX(int x)
         {
