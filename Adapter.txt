@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace patterns_2
+{
+  
+       
+        public abstract class Movement
+        {
+            public abstract void Run();
+        }
+        
+        interface Moving
+        {
+            void MoveToX(int x);
+            void MoveToY(int y);
+        }
+    public class MoveRedRid : MovingToMoveAdapter, Moving
+    {
+        internal Moving moving
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public void MoveToX(int x)
+        {
+            Console.WriteLine("Движение по х на:" + x);
+        }
+
+
+        public void MoveToY(int y)
+        {
+            Console.WriteLine("Движение по y на:" + y);
+        }
+
+    }
+    class RedHood 
+    {
+        public void Travel(Movement moving)
+        {
+            moving.Run();
+        }
+    }
+    public class MovingToMoveAdapter: Movement //адаптер, который позволяет работать с объектами MoveRedHid как с объектами Movement.
+    {
+            MoveRedRid moveRedRid;
+            public MovingToMoveAdapter(MoveRedRid m)
+            {
+                moveRedRid = m;
+            }
+            public override void Run()
+            {
+                moveRedRid.MoveToX(112);
+                moveRedRid.MoveToY(23);
+            }
+        }
+       
+
+        public class RunAway : Movement
+        {
+            public override void Run()
+            {
+                Console.WriteLine("Убегать!");
+
+            }
+        }
+ 
+        }
+
+    
+
