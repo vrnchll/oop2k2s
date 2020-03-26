@@ -1,0 +1,304 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace lab5
+{
+    public partial class Form1 : Form
+    {
+        private List<Student> students = new List<Student>();
+        private List<Student> fakeList = new List<Student>();
+        private string selectedRadial = "";
+        private string lastAction = "";
+        public Form1()
+        { 
+            InitializeComponent();
+            listBox1.DataSource = students;
+            LastName.Validating += LastName_Validating;
+            FirstName.Validating += FirstName_Validating;
+            MiddleName.Validating += MiddleName_Validating;
+            kurs.Validating += kurs_Validating;
+            group.Validating += group_Validating;
+        }
+
+
+        private void submit_Click(object sender, EventArgs e)
+        {
+            Student newStudent = new Student
+            {
+                FirstName = FirstName.Text,
+                LastName = LastName.Text,
+                MiddleName = MiddleName.Text,
+                Gender = Gender.Text,
+                Age = Convert.ToInt32(AgeSlider.Value),
+                Profession = selectedRadial,
+                BirthDate = DatePicker.Value,
+                Course = Convert.ToInt32(kurs.Text),
+                Group = Convert.ToInt32(group.Text),
+                Adress = new Adress
+                {
+                    City = City.Text,
+                    Street = Street.Text,
+                    House = Convert.ToInt32(House.Text),
+                    Apartment = Convert.ToInt32(Flat.Text)
+                },
+                Job = new Job
+                {
+                    Company = CompanyName.Text,
+                    Title = Title.Text,
+                    Salary = Convert.ToInt32(Salary.Text),
+                    Experience = Convert.ToInt32(Experience.Text)
+                }
+            };
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(newStudent);
+            if (!Validator.TryValidateObject(newStudent, context, results, true))
+                throw new Exception(results.Last().ErrorMessage);
+
+            students.Add(newStudent);
+           
+            listBox1.DataSource = fakeList;
+            listBox1.DataSource = students;
+            listBox1.Refresh();
+           CountLabel.Text = string.Format("Количество объектов: {0}", students.Count);
+            LastActionLabel.Text = "Добавлен объект";
+        }
+
+
+        private void AgeSlider_Scroll(object sender, EventArgs e)
+        {
+            label4.Text = "Возраст : " + AgeSlider.Value.ToString();
+        }
+
+        
+
+        private void Isit_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedRadial = "ИСиТ";
+        }
+
+        private void Poit_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedRadial = "ПОИТ";
+        }
+
+        private void Poibms_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedRadial = "ПОИБМС";
+        }
+
+        private void Deivi_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedRadial = "ДЭиВИ";
+        }
+
+        private void listBox1_DoubleClick(object sender, EventArgs e)
+        {
+            Result result = new Result((Student)listBox1.SelectedItem);
+            result.Show();
+            LastActionLabel.Text = $"Выбран объект {listBox1.SelectedItem}";
+        }
+
+        private void ToXml_Click(object sender, EventArgs e)
+        {
+            SaveXml.ShowDialog();
+            XmlSerializerWrapper.Serialize<List<Student>>(students, SaveXml.SelectedPath);
+            LastActionLabel.Text = "Save To XML";
+        }
+
+        private void FromXml_Click(object sender, EventArgs e)
+        {
+            OpenXml.ShowDialog();
+            students = XmlSerializerWrapper.Deserialize<List<Student>>(OpenXml.FileName.ToString());
+            listBox1.DataSource = fakeList;
+            listBox1.DataSource = students;
+            CountLabel.Text = string.Format("Количество объектов: {0}", students.Count);
+            LastActionLabel.Text = "Read From XML";
+
+        }
+
+        private void информацияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            About about = new About();
+            about.Show();
+            LastActionLabel.Text = "About";
+        }
+
+        private void сортировкаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Sort sort = new Sort(students);
+            sort.Show();
+            LastActionLabel.Text = "Sort menu";
+        }
+
+        private void поискToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Find find = new Find(students);
+            find.Show();
+            LastActionLabel.Text = "Find Menu";
+        }
+
+
+        private void button_clear_Click(object sender, EventArgs e)
+        {
+            students.Clear();
+            listBox1.DataSource = fakeList;
+            listBox1.DataSource = students;
+            LastActionLabel.Text = "Clear list";
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            menuStrip1.Visible = !menuStrip1.Visible;
+            Button button = sender as Button;
+            if (button.Text.Equals("Спрятать"))
+                button.Text = "Показать";
+            else
+                button.Text = "Спрятать";
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Date2.Text = DateTime.Now.ToString();
+        }
+
+        private void LastName_Validating(object sender, CancelEventArgs e)
+        {
+            if (String.IsNullOrEmpty(LastName.Text))
+            {
+                error.SetError(LastName, "Пустое поле!");
+            }
+            else if (LastName.Text.Length < 2)
+            {
+                error.SetError(LastName, "Недостаточно символов!");
+            }
+            else
+            {
+                error.Clear();
+            }
+        }
+
+        private void FirstName_Validating(object sender, CancelEventArgs e)
+        {
+            if (String.IsNullOrEmpty(FirstName.Text))
+            {
+                error.SetError(FirstName, "Пустое поле!");
+            }
+            else if (FirstName.Text.Length < 2)
+            {
+                error.SetError(FirstName, "Недостаточно символов!");
+            }
+            else
+            {
+                error.Clear();
+            }
+        }
+
+        private void MiddleName_Validating(object sender, CancelEventArgs e)
+        {
+            if (String.IsNullOrEmpty(MiddleName.Text))
+            {
+                error.SetError(MiddleName, "Пустое поле!");
+            }
+            else if (MiddleName.Text.Length < 2)
+            {
+                error.SetError(MiddleName, "Недостаточно символов!");
+            }
+            else
+            {
+                error.Clear();
+            }
+        }
+        private void kurs_Validating(object sender, CancelEventArgs e)
+        {
+            int kurso = 5;
+            if (String.IsNullOrEmpty(kurs.Text))
+            {
+                error.SetError(kurs, "Не указан курс!");
+            }
+            else if (!Int32.TryParse(kurs.Text, out kurso))
+            {
+                error.SetError(kurs, "Некорретное значение!");
+            }
+            else
+            {
+                error.Clear();
+            }
+        }
+        private void group_Validating(object sender, CancelEventArgs e)
+        {
+            int group1 = 11;
+            if (String.IsNullOrEmpty(group.Text))
+            {
+                error.SetError(group, "Не указан курс!");
+            }
+            else if (!Int32.TryParse(group.Text, out group1))
+            {
+                error.SetError(group, "Некорретное значение!");
+            }
+            else
+            {
+                error.Clear();
+            }
+        }
+
+        private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
+        {
+            
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void DatePicker_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OpenXml_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void Gender_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        
+    }
+}
