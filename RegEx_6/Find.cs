@@ -13,8 +13,8 @@ namespace lab5
 {
     public partial class Find : Form
     {
-     List<Student> students { get; set; }
-     List<Student> result= new List<Student>();
+        List<Student> students { get; set; }
+        List<Student> resultList = new List<Student>();
         public Find()
         {
             InitializeComponent();
@@ -25,44 +25,24 @@ namespace lab5
             InitializeComponent();
             students = list;
         }
+
         private void NameSearch_Leave(object sender, EventArgs e)
         {
             Regex regex = new Regex($"({NameSearch.Text})", RegexOptions.IgnoreCase);
-            result.Clear();
+            resultList.Clear();
             foreach (Student x in students)
             {
                 if (regex.Match(x.ToString()).Success)
-                    result.Add(x);
+                    resultList.Add(x);
             }
             listBox1.DataSource = students;
-            listBox1.DataSource = result;
+            listBox1.DataSource = resultList;
         }
-        private void ProfessionSearch_Leave(object sender, EventArgs e)
-        {
-            Regex regex = new Regex($"({ProfessionSearch.Text})", RegexOptions.IgnoreCase);
-            result.Clear();
-            foreach (Student x in students)
-            {
-                if (regex.Match(x.Profession).Success)
-                    result.Add(x);
-            }
-            listBox1.DataSource = students;
-            listBox1.DataSource = result;
-        }
-        private void CourseSearch_Leave(object sender, EventArgs e)
-        {
-            try
-            {
-                result = students.Where(s => s.Course == Convert.ToInt32(CourseSearch.Text)).ToList();
-                listBox1.DataSource = students;
-                listBox1.DataSource = result;
-            }
-            catch { }
-        }
+
         private void ToXml_Click(object sender, EventArgs e)
         {
             SaveXml.ShowDialog();
-            XmlSerializerWrapper.Serialize<List<Student>>(result, SaveXml.SelectedPath);
+            XmlSerializerWrapper.Serialize<List<Student>>(resultList, SaveXml.SelectedPath);
         }
 
         private void listBox1_DoubleClick(object sender, EventArgs e)
@@ -71,8 +51,30 @@ namespace lab5
             result.Show();
         }
 
-       
+        private void ProfessionSearch_Leave(object sender, EventArgs e)
+        {
+            Regex regex = new Regex($"({ProfessionSearch.Text})", RegexOptions.IgnoreCase);
+            resultList.Clear();
+            foreach (Student x in students)
+            {
+                if (regex.Match(x.Profession).Success)
+                    resultList.Add(x);
+            }
+            listBox1.DataSource = students;
+            listBox1.DataSource = resultList;
+        }
 
-       
+        private void CourseSearch_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                resultList = students.Where(s => s.Course == Convert.ToInt32(CourseSearch.Text)).ToList();
+                listBox1.DataSource = students;
+                listBox1.DataSource = resultList;
+            }
+            catch { }
+        }
+
+
     }
 }

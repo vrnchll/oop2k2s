@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace lab5
 {
@@ -16,6 +17,7 @@ namespace lab5
     {
         private List<Student> students = new List<Student>();
         private List<Student> fakeList = new List<Student>();
+        List<Student> result = new List<Student>();
         private string selectedRadial = "";
         private string lastAction = "";
         public Form1()
@@ -25,10 +27,58 @@ namespace lab5
             LastName.Validating += LastName_Validating;
             FirstName.Validating += FirstName_Validating;
             MiddleName.Validating += MiddleName_Validating;
-            kurs.Validating += kurs_Validating;
-            group.Validating += group_Validating;
-        }
+            Kours.Validating += kurs_Validating;
+            Group.Validating += group_Validating;
+            ToolStripMenuItem SearchItem = new ToolStripMenuItem("Поиск");
 
+            ToolStripMenuItem FIOItem = new ToolStripMenuItem("По ФИО");
+            SearchItem.DropDownItems.Add(FIOItem);
+            FIOItem.Click += FIOItem_Click;
+
+            ToolStripMenuItem KursItem = new ToolStripMenuItem("По Курсу");
+            SearchItem.DropDownItems.Add(KursItem);
+            KursItem.Click += KursItem_Click;
+
+            ToolStripMenuItem ProffItem = new ToolStripMenuItem("По Специальности");
+            SearchItem.DropDownItems.Add(ProffItem);
+            ProffItem.Click += ProffItem_Click;
+
+            menuStrip1.Items.Add(SearchItem);
+
+            //2
+            ToolStripMenuItem SortItem = new ToolStripMenuItem("Сортировка");
+
+            ToolStripMenuItem Kurs2Item = new ToolStripMenuItem("По Курсу");
+            SortItem.DropDownItems.Add(Kurs2Item);
+            Kurs2Item.Click += Kurs2Item_Click;
+
+            ToolStripMenuItem StazhItem = new ToolStripMenuItem("По Стажу");
+            SortItem.DropDownItems.Add(StazhItem);
+            StazhItem.Click += StazhItem_Click;
+
+            ToolStripMenuItem GrItem = new ToolStripMenuItem("По Группе");
+            SortItem.DropDownItems.Add(GrItem);
+            GrItem.Click += GrItem_Click;
+
+
+            menuStrip1.Items.Add(SortItem);
+
+            //3
+            ToolStripMenuItem AboutItem = new ToolStripMenuItem("О программе");
+            menuStrip1.Items.Add(AboutItem);
+            AboutItem.Click += AboutItem_Click;
+
+
+
+            timer1 = new Timer() { Interval = 1000 };
+            timer1.Tick += timer1_Tick;
+            timer1.Start();
+        }
+        void timer1_Tick(object sender, EventArgs e)
+        {
+            DateLabel.Text = DateTime.Now.ToLongDateString();
+            TimeLabel.Text = DateTime.Now.ToLongTimeString();
+        }
 
         private void submit_Click(object sender, EventArgs e)
         {
@@ -37,12 +87,12 @@ namespace lab5
                 FirstName = FirstName.Text,
                 LastName = LastName.Text,
                 MiddleName = MiddleName.Text,
-                Gender = Gender.Text,
+                Gender = selectedRadial,
                 Age = Convert.ToInt32(AgeSlider.Value),
                 Profession = selectedRadial,
                 BirthDate = DatePicker.Value,
-                Course = Convert.ToInt32(kurs.Text),
-                Group = Convert.ToInt32(group.Text),
+                Course = Convert.ToInt32(Kours.Text),
+                Group = Convert.ToInt32(Group.Text),
                 Adress = new Adress
                 {
                     City = City.Text,
@@ -68,17 +118,73 @@ namespace lab5
             listBox1.DataSource = fakeList;
             listBox1.DataSource = students;
             listBox1.Refresh();
-           CountLabel.Text = string.Format("Количество объектов: {0}", students.Count);
-            LastActionLabel.Text = "Добавлен объект";
+           Count.Text = string.Format("Количество объектов: {0}", students.Count);
+            label19.Text = "Добавлен объект";
+        }
+
+        //Sort
+        private void StazhItem_Click(object sender, EventArgs e)
+        {
+            listBox1.DataSource = students.OrderBy(s => s.Job.Experience).ToList();
+            students= students.OrderBy(s => s.Job.Experience).ToList();
+        }
+
+        private void GrItem_Click(object sender, EventArgs e)
+        {
+            listBox1.DataSource = students.OrderBy(s => s.Group).ToList();
+            students = students.OrderBy(s => s.Group).ToList();
+        }
+        private void Kurs2Item_Click(object sender, EventArgs e)
+        {
+            listBox1.DataSource = students.OrderBy(s => s.Course).ToList();
+            students = students.OrderBy(s => s.Course).ToList();
         }
 
 
+        //Menu
+        public void AboutItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Версия: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString() + "\nФИО разработчика: Veronika Bobrik", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LastAction1.Text = "Info";
+        }
+
+        //Search
+        public void  FIOItem_Click(object sender, EventArgs e)
+        {
+
+            Find find = new Find(students);
+            find.Show();
+            label19.Text = "Find Menu";
+        }
+
+        public void KursItem_Click(object sender, EventArgs e)
+        {
+
+            Find find = new Find(students);
+            find.Show();
+            label19.Text = "Find Menu";
+        }
+        public void ProffItem_Click(object sender, EventArgs e)
+        { 
+
+            Find find = new Find(students);
+            find.Show();
+            label19.Text = "Find Menu";
+        }
         private void AgeSlider_Scroll(object sender, EventArgs e)
         {
             label4.Text = "Возраст : " + AgeSlider.Value.ToString();
         }
 
-        
+        private void mButton_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedRadial = "м";
+        }
+
+        private void zhButton_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedRadial = "ж";
+        }
 
         private void Isit_CheckedChanged(object sender, EventArgs e)
         {
@@ -104,14 +210,14 @@ namespace lab5
         {
             Result result = new Result((Student)listBox1.SelectedItem);
             result.Show();
-            LastActionLabel.Text = $"Выбран объект {listBox1.SelectedItem}";
+            label19.Text = $"Выбран объект {listBox1.SelectedItem}";
         }
 
         private void ToXml_Click(object sender, EventArgs e)
         {
             SaveXml.ShowDialog();
             XmlSerializerWrapper.Serialize<List<Student>>(students, SaveXml.SelectedPath);
-            LastActionLabel.Text = "Save To XML";
+            label19.Text = "Save To XML";
         }
 
         private void FromXml_Click(object sender, EventArgs e)
@@ -120,31 +226,30 @@ namespace lab5
             students = XmlSerializerWrapper.Deserialize<List<Student>>(OpenXml.FileName.ToString());
             listBox1.DataSource = fakeList;
             listBox1.DataSource = students;
-            CountLabel.Text = string.Format("Количество объектов: {0}", students.Count);
-            LastActionLabel.Text = "Read From XML";
+            Count.Text = string.Format("Количество объектов: {0}", students.Count);
+            label19.Text = "Read From XML";
 
         }
-
-        private void информацияToolStripMenuItem_Click(object sender, EventArgs e)
+        public List<Company.Job> joblist = new List<Company.Job>();
+        private void CompanyName_SelectedIndexChanged(object sender, EventArgs e)
         {
-            About about = new About();
-            about.Show();
-            LastActionLabel.Text = "About";
+            if (CompanyName.SelectedItem.ToString() == "Добавить компанию")
+            {
+               Company comp = new Company();
+               comp.ShowDialog();
+               foreach (Company.Job job in comp.Jobs)
+                {
+                    if (job.Title.ToString().Length > 0)
+                    {
+                        CompanyName.Items.Add(job.Title);
+                        joblist.Add(job);
+                    }
+                    CompanyName.SelectedItem = job.Title;
+                }
+            }
         }
-
-        private void сортировкаToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Sort sort = new Sort(students);
-            sort.Show();
-            LastActionLabel.Text = "Sort menu";
-        }
-
-        private void поискToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Find find = new Find(students);
-            find.Show();
-            LastActionLabel.Text = "Find Menu";
-        }
+        
+        
 
 
         private void button_clear_Click(object sender, EventArgs e)
@@ -152,11 +257,11 @@ namespace lab5
             students.Clear();
             listBox1.DataSource = fakeList;
             listBox1.DataSource = students;
-            LastActionLabel.Text = "Clear list";
+            label19.Text = "Clear list";
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            menuStrip1.Visible = !menuStrip1.Visible;
+            toolStrip1.Visible = !toolStrip1.Visible;
             Button button = sender as Button;
             if (button.Text.Equals("Спрятать"))
                 button.Text = "Показать";
@@ -164,9 +269,37 @@ namespace lab5
                 button.Text = "Спрятать";
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+       
+
+
+        // панель инструментов
+        private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            Date2.Text = DateTime.Now.ToString();
+            Find find = new Find(students);
+            find.Show();
+            label19.Text = "Find Menu";
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            Sort sort = new Sort(students);
+            sort.Show();
+            label19.Text = "Sort menu";
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            SaveXml.ShowDialog();
+            XmlSerializerWrapper.Serialize<List<Student>>(students, SaveXml.SelectedPath);
+            label19.Text = "Save To XML";
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            students.Clear();
+            listBox1.DataSource = fakeList;
+            listBox1.DataSource = students;
+            label19.Text = "Clear list";
         }
 
         private void LastName_Validating(object sender, CancelEventArgs e)
@@ -219,13 +352,13 @@ namespace lab5
         private void kurs_Validating(object sender, CancelEventArgs e)
         {
             int kurso = 5;
-            if (String.IsNullOrEmpty(kurs.Text))
+            if (String.IsNullOrEmpty(Kours.Text))
             {
-                error.SetError(kurs, "Не указан курс!");
+                error.SetError(Kours, "Не указан курс!");
             }
-            else if (!Int32.TryParse(kurs.Text, out kurso))
+            else if (!Int32.TryParse(Kours.Text, out kurso))
             {
-                error.SetError(kurs, "Некорретное значение!");
+                error.SetError(Kours, "Некорретное значение!");
             }
             else
             {
@@ -235,13 +368,13 @@ namespace lab5
         private void group_Validating(object sender, CancelEventArgs e)
         {
             int group1 = 11;
-            if (String.IsNullOrEmpty(group.Text))
+            if (String.IsNullOrEmpty(Group.Text))
             {
-                error.SetError(group, "Не указан курс!");
+                error.SetError(Group, "Не указан курс!");
             }
-            else if (!Int32.TryParse(group.Text, out group1))
+            else if (!Int32.TryParse(Group.Text, out group1))
             {
-                error.SetError(group, "Некорретное значение!");
+                error.SetError(Group, "Некорретное значение!");
             }
             else
             {
@@ -299,6 +432,11 @@ namespace lab5
 
         }
 
-        
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+       
     }
 }
