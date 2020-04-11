@@ -1,0 +1,168 @@
+﻿<Window x:Class="Wpf_7_8.MainWindow"
+        
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Wpf_7_8"
+        Title="Планировщик дел" Height="700" Width="1100" Loaded="Window_Loaded"
+        Icon="D:\\2k2s\ооп\4.png">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.New" Executed="New_Executed" />
+        <CommandBinding Command="local:WindowCommands.Reset" Executed="Reset_Executed"/>
+        <CommandBinding Command="local:WindowCommands.Search" Executed="Search_Executed"/>
+        
+    </Window.CommandBindings>
+    <Window.Resources>
+
+        <Style TargetType="Grid">
+            <Setter Property="Background" Value="#F08080"></Setter>
+        </Style>
+        <Style TargetType="DataGrid" x:Key="All">
+            <Setter Property="Background" Value="Moccasin"></Setter>
+            <Setter Property="Margin" Value="10,5,5,20"></Setter>
+            <Setter Property="FontSize" Value="14"></Setter>
+        </Style>
+        <Style TargetType="DataGrid" x:Key="Names">
+            <Setter Property="Background" Value="Wheat"></Setter>
+        </Style>
+        <Style TargetType="Menu">
+            <Setter Property="Background" Value="#FA8072"></Setter>
+
+        </Style>
+        <Style TargetType="MenuItem">
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Background" Value="#FA8072"></Setter>
+
+        </Style>
+        <Style TargetType="ToolBar">
+            <Setter Property="Background" Value="White"></Setter>
+            <Setter Property="Height" Value="40"></Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="51*"/>
+            <RowDefinition Height="418*"/>
+
+        </Grid.RowDefinitions>
+        <Menu Margin="182,-1,202,0" Grid.Column="0" Grid.Row="0" VerticalAlignment="Top">
+            <MenuItem x:Name="Task"  Header="{DynamicResource AddTask}" Command="{x:Static ApplicationCommands.New}"
+                                         CommandTarget="{Binding ElementName=toDoL}" >
+                <MenuItem.CommandBindings>
+                    <CommandBinding Command="New" Executed="New_Executed"></CommandBinding>
+                </MenuItem.CommandBindings>
+            </MenuItem>
+            <MenuItem x:Name="menuLanguage" Header="{DynamicResource Language}" />
+            <MenuItem Header="{DynamicResource Filter}">
+                <MenuItem Header="{DynamicResource byCategory}">
+                    <MenuItem Header="{DynamicResource Work}" Click="MenuItem_ByCategory"></MenuItem>
+                    <MenuItem Header="{DynamicResource Home}" Click="MenuItem_ByCategory"></MenuItem>
+                    <MenuItem Header="{DynamicResource Study}" Click="MenuItem_ByCategory"></MenuItem>
+                    <MenuItem Header="{DynamicResource Personal}" Click="MenuItem_ByCategory"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource byPriotity}">
+                    <MenuItem Header="{DynamicResource Lowest}" Click="MenuItem_ByPriority"></MenuItem>
+                    <MenuItem Header="{DynamicResource Normal}" Click="MenuItem_ByPriority"></MenuItem>
+                    <MenuItem Header="{DynamicResource Highest}" Click="MenuItem_ByPriority"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource byDate}">
+
+                </MenuItem>
+
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Edit}">
+                <MenuItem Header="{DynamicResource Copy}" CommandTarget="{Binding ElementName=toDoL}" Command="Copy"/>
+                <MenuItem Header="{DynamicResource Paste}" CommandTarget="{Binding ElementName=toDoL}" Command="Paste"/>
+                <MenuItem Header="{DynamicResource Cut}" CommandTarget="{Binding ElementName=toDoL}" Command="Cut"/>
+                <MenuItem Header="{DynamicResource Delete}" Command="{x:Static ApplicationCommands.Delete}"
+                                         CommandTarget="{Binding ElementName=toDoL}"/>
+            </MenuItem>
+
+            <MenuItem x:Name="Reset" Header="{DynamicResource Reset}" Command="local:WindowCommands.Reset" />
+            <MenuItem Header="{DynamicResource Exit}" Command="Close" x:Name="Exit" ></MenuItem>
+            <ToolBar Margin="20,0,0,0">
+                <ToolBar Height="30" VerticalAlignment="Top">
+                    <TextBox  x:Name="SearchInput" Width="100" Text="Поиск..."/>
+                </ToolBar>
+                <ToolBar x:Name="Find">
+                    
+                    <Button Click="Search">
+                        <Button.CommandBindings>
+                            <CommandBinding  Command="local:WindowCommands.Search"  ></CommandBinding>
+                        </Button.CommandBindings>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="5" Height="5" Fill="Black"  HorizontalAlignment="Left"/>
+                            <TextBlock HorizontalAlignment="Right" Width="60" Margin="5 0 0 0"><Run Text="Найти"/></TextBlock>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+            </ToolBar>
+
+        </Menu>
+
+
+        <DataGrid x:Name="toDoL" Margin="182,10,202,10" AutoGenerateColumns="False" Style="{StaticResource All}" ItemsSource="{Binding tasksCollection}" SelectedItem="{Binding SelectedTask, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="0">
+            <DataGrid.Background>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="1,1">
+                    <GradientStop Color="#F08080" Offset="1"/>
+                    <GradientStop Color="#CD5C5C"/>
+                </LinearGradientBrush>
+            </DataGrid.Background>
+            <DataGrid.Columns>
+                <DataGridTextColumn  Binding="{Binding Path = CreationDate, StringFormat='dd MMM yyyy'}"     IsReadOnly="True" x:Name="CreationDate">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=CreationDate}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn  IsReadOnly="False" x:Name="EndDate">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=FinishDate}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=EndDate, StringFormat='dd MMM yyyy' }"  />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <DatePicker Name="DatePicker"  SelectedDate="{Binding Path=EndDate}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridComboBoxColumn x:Name="Priority" SelectedValueBinding="{Binding Priority, Mode=TwoWay}"  
+                    DisplayMemberPath="{Binding Priority}"  IsReadOnly="False" >
+                    <DataGridComboBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=Priority}" />
+                    </DataGridComboBoxColumn.Header>
+                </DataGridComboBoxColumn>
+                <DataGridComboBoxColumn x:Name="Category" IsReadOnly="False"  SelectedValueBinding="{Binding Category, Mode=TwoWay}"  
+                    DisplayMemberPath="{Binding Category}">
+                    <DataGridComboBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=Category}" />
+                    </DataGridComboBoxColumn.Header>
+
+                </DataGridComboBoxColumn>
+                <DataGridTextColumn Binding="{Binding Path = Name}"  IsReadOnly="False" x:Name="NameTask">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=NameTask}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Path = Description}"  IsReadOnly="False" x:Name="Description">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=Description}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridCheckBoxColumn Binding="{Binding Path = Status, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="False" x:Name="Status">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource ResourceKey=Done}" />
+                    </DataGridCheckBoxColumn.Header>
+                </DataGridCheckBoxColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+
+
+</Window>
