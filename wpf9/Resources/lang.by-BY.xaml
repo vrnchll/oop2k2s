@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Wpf_7_8.Resources" xmlns:v="clr-namespace:System;assembly=mscorlib">
+    <v:String x:Key="AddTask">Дадаць задачу</v:String>
+    <v:String x:Key="Filter">Фільтр</v:String>
+    <v:String x:Key="Language">Мова</v:String>
+    <v:String x:Key="Search">Пошук</v:String>
+    <v:String x:Key="CreationDate">Дата стварэння</v:String>
+    <v:String x:Key="Category">Катэгорыя</v:String>
+    <v:String x:Key="Priority">Прыярытэт</v:String>
+    <v:String x:Key="FinishDate">Дата заканчэння</v:String>
+    <v:String x:Key="Description">Апісанне</v:String>
+    <v:String x:Key="NameTask">Назва</v:String>
+    <v:String x:Key="Done">Статус</v:String>
+    <v:String x:Key="byPriotity">Па прыярытэце</v:String>
+    <v:String x:Key="Lowest">Нізкі</v:String>
+    <v:String x:Key="Normal">Сярэдні</v:String>
+    <v:String x:Key="Highest">Высокі</v:String>
+    <v:String x:Key="byCategory">Па катэгорыі</v:String>
+    <v:String x:Key="Personal">Асабістае</v:String>
+    <v:String x:Key="Work">Праца</v:String>
+    <v:String x:Key="Study">Вучоба</v:String>
+    <v:String x:Key="Home">Дом</v:String>
+    <v:String x:Key="byDate">Па даце</v:String>
+    <v:String x:Key="Reset">Скід</v:String>
+    <v:String x:Key="Edit">Рэдагаваць</v:String>
+    <v:String x:Key="Delete">Выдаліць</v:String>
+    <v:String x:Key="Exit">Выхад</v:String>
+    <v:String x:Key="Copy">Капіяваць</v:String>
+    <v:String x:Key="Paste">Уставіць</v:String>
+    <v:String x:Key="Cut">Выразаць</v:String>
+    <v:String x:Key="Undo">Адмяніць</v:String>
+    <v:String x:Key="Redo">Паутарыць</v:String>
+</ResourceDictionary>
